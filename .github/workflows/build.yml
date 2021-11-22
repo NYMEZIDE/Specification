@@ -36,10 +36,15 @@ jobs:
           dotnet build -f net5.0 --configuration Release
           dotnet build -f net6.0 --configuration Release
       - run: |
-          dotnet test ./tests/Specification.IntegrationTests --logger:trx -r TestResults
+          dotnet test ./tests/Specification.IntegrationTests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
           dotnet test ./tests/Specification.Tests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} 
-          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info 
+          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
