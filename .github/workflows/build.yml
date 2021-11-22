@@ -7,22 +7,21 @@ on:
       - '*'
 
 jobs:
-  publish:
-    name: build, pack, test & publish
+  build:
     runs-on: ubuntu-latest
-    env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      DOTNET_NOLOGO: true
-      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    name: Dotnet Side by Side testing sample
     steps:
-      - uses: actions/checkout@main
-
-      - name: Install latest .NET SDK
-        uses: Elskom/setup-latest-dotnet@main
-
-      - name: Restore, Build, test, and pack
-        uses: Elskom/build-dotnet@main
+      - uses: actions/checkout@v2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
         with:
-          TEST: true
-          PACK: true
+          dotnet-version: '2.1.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      - run: |
+          cd src\Specification
+          dotnet build --configuration Release
+      - run: |
+          ls *tests/*.Tests -d | xargs -L1 dotnet test --logger:trx -r test-results
