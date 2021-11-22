@@ -9,13 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Dotnet Side by Side testing sample
+    name: Dotnet Build and Tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.x'
+          dotnet-version: '2.2.x'
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
@@ -30,8 +30,8 @@ jobs:
           dotnet-version: '6.x'    
       - run: |
           cd ./src/Specification
-          dotnet build -f net2.1 --configuration Release
-          dotnet build -f net3.1 --configuration Release
+          dotnet build -f netcoreapp2.2 --configuration Release
+          dotnet build -f netcoreapp3.1 --configuration Release
           dotnet build -f net5.0 --configuration Release
           dotnet build -f net6.0 --configuration Release
       - run: |
