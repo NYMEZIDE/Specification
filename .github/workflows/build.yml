@@ -15,13 +15,24 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.x'
+          dotnet-version: '2.2.x'
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'    
       - run: |
           cd ./src/Specification
-          dotnet build --configuration Release
+          dotnet build -f net2.2 --configuration Release
+          dotnet build -f net3.1 --configuration Release
+          dotnet build -f net5.0 --configuration Release
+          dotnet build -f net6.0 --configuration Release
       - run: |
           ls ./tests/*.Tests -d | xargs -L1 dotnet test --logger:trx -r test-results
