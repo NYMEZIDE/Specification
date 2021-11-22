@@ -21,7 +21,8 @@ jobs:
         with:
           dotnet-version: '3.1.x'
       - run: |
-          cd src\Specification
+          cd ./src/Specification
           dotnet build --configuration Release
       - run: |
+          cd ./
           ls *tests/*.Tests -d | xargs -L1 dotnet test --logger:trx -r test-results
