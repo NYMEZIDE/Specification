@@ -24,5 +24,5 @@ jobs:
           cd ./src/Specification
           dotnet build --configuration Release
       - run: |
-          cd ./
+          cd .
           ls *tests/*.Tests -d | xargs -L1 dotnet test --logger:trx -r test-results
