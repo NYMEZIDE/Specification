@@ -30,8 +30,6 @@ namespace Specification.Internal
                 base.UpActions(Right);
 
             return false;
-
-            //return Left.IsSatisfiedBy(candidate) || Right.IsSatisfiedBy(candidate);
         }
     }
 }
