@@ -39,11 +39,6 @@ jobs:
   tests:
     needs: build
     name: Dotnet Tests
-    strategy:
-      matrix:
-        service:
-        - Specification.IntegrationTests
-        - Specification.Tests
     runs-on: ubuntu-latest
     steps:
       - name: Test
@@ -51,13 +46,20 @@ jobs:
         with:
           dotnet-version: '3.1.x'
       - run: |
-          dotnet test ./tests/${{ matrix.service }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test ./tests/Specification.Tests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test ./tests/Specification.IntegrationTests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} 
           parallel: true
-          path-to-lcov: ./tests/${{ matrix.service }}/TestResults/coverage.info
+          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          parallel: true
+          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
       
   coveralls-finished:
     needs: tests
