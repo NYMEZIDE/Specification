@@ -7,7 +7,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  build-tests:
     runs-on: ubuntu-latest
     name: Dotnet Build and Tests
     steps:
@@ -41,10 +41,24 @@ jobs:
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.Tests
+          parallel: true
           path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.IntegrationTests
+          parallel: true
           path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
+      
+  coveralls-finished:
+    needs: build-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
