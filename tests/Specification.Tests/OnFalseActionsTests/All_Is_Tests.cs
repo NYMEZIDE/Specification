@@ -466,5 +466,90 @@ namespace Specification.Tests.OnFalseActionsTests
             Assert.False(actionValue1);
             Assert.False(actionValue2);
         }
+
+        [Fact]
+        public void CounterByOnFalseActions()
+        {
+            IEnumerable<Movie> movies = new List<Movie>
+            {
+                new Movie()
+                {
+                    Rating = 1
+                },
+                new Movie()
+                {
+                    Rating = 2
+                },
+                new Movie()
+                {
+                    Rating = 3
+                },
+                new Movie()
+                {
+                    Rating = 4
+                },
+                new Movie()
+                {
+                    Rating = 5
+                },
+                new Movie()
+                {
+                    Rating = 6
+                },
+                new Movie()
+                {
+                    Rating = 7
+                },
+                new Movie()
+                {
+                    Rating = 8
+                },
+                new Movie()
+                {
+                    Rating = 9
+                },
+                new Movie()
+                {
+                    Rating = 10
+                },
+            };
+
+            var counter = 0;
+            var spec = new Spec<Movie>(m => m.Rating % 2 == 0)
+            {
+                OnFalseAction = (spec, candidate) => counter++
+            };
+
+            movies.AllIs(spec);
+
+            Assert.Equal(5, counter);
+        }
+
+        [Fact] 
+        public void When_notSpec_isFalse_ActionExecute()
+        {
+            IEnumerable<Movie> movies = new List<Movie>
+            {
+                new Movie()
+                {
+                    Rating = 5
+                },
+                new Movie()
+                {
+                    Rating = 6
+                }
+            };
+
+            var actionValue1 = false;
+            var spec = new Spec<Movie>(m => m.Rating == 5)
+            {
+                OnFalseAction = (s, c) => actionValue1 = true
+            };
+            var notSpec = spec.Not();
+
+            Assert.False(movies.AllIs(notSpec));
+
+            Assert.True(actionValue1);
+        }
     }
 }

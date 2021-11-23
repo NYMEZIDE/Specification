@@ -73,5 +73,39 @@ namespace Specification.Tests.OnFalseActionsTests
             Assert.False(actionValue1);
             Assert.False(actionValue2);
         }
+
+        [Fact]
+        public void When_specCascade_isFalse_ActionExecute()
+        {
+            Movie movie = new Movie()
+            {
+                Rating = 4,
+                MpaaRating = MpaaRating.G,
+                Duration = TimeSpan.FromHours(2.5) 
+            };
+
+            var ratingSpecActionResult = false;
+            var mpaaRatingSpecActionResult = false;
+            var durationSpecActionResult = false;
+
+            var ratingSpec = new Spec<Movie>(m => m.Rating > 5)
+            {
+                OnFalseAction = (s, c) => ratingSpecActionResult = true
+            };
+            var mpaaRatingSpec = new Spec<Movie>(m => m.MpaaRating == MpaaRating.PG13)
+            {
+                OnFalseAction = (s, c) => mpaaRatingSpecActionResult = true
+            };
+            var durationSpec = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(2));
+
+            var compositeRatingsSpecs = ratingSpec.Or(mpaaRatingSpec);
+            var compositeSpecs = durationSpec.And(compositeRatingsSpecs);
+
+            Assert.False(movie.Is(compositeSpecs));
+
+            Assert.True(ratingSpecActionResult);
+            Assert.True(mpaaRatingSpecActionResult);
+            Assert.False(durationSpecActionResult);
+        }
     }
 }

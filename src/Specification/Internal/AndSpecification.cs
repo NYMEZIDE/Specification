@@ -22,12 +22,14 @@ namespace Specification.Internal
         {
             var leftResult = Left.InternalIsSatisfiedBy(candidate);
 
-            if (leftResult == false && Left.OnFalseAction != null)
+            if (leftResult == false)
+            //if (leftResult == false && Left.OnFalseAction != null)
                 base.UpActions(Left);
 
             var rightResult = Right.InternalIsSatisfiedBy(candidate);
 
-            if (rightResult == false && Right.OnFalseAction != null)
+            if (rightResult == false)
+            //if (rightResult == false && Right.OnFalseAction != null)
                 base.UpActions(Right);
 
             return leftResult && rightResult;

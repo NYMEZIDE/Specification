@@ -23,10 +23,10 @@ namespace Specification.Internal
             if (Left.InternalIsSatisfiedBy(candidate) || Right.InternalIsSatisfiedBy(candidate))
                 return true;
 
-            if (Left.OnFalseAction != null)
+            //if (Left.OnFalseAction != null)
                 base.UpActions(Left);
 
-            if (Right.OnFalseAction != null)
+            //if (Right.OnFalseAction != null)
                 base.UpActions(Right);
 
             return false;

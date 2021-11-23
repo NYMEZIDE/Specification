@@ -19,7 +19,8 @@ namespace Specification.Internal
         {
             var innerResult = !Inner.InternalIsSatisfiedBy(candidate);
 
-            if (innerResult == false && Inner.OnFalseAction != null)
+            if (innerResult == false)
+            //if (innerResult == false && Inner.OnFalseAction != null)
                 base.UpActions(Inner);
 
             return innerResult;

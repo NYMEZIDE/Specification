@@ -25,7 +25,8 @@ namespace Specification
                 }
             }
 
-            _onFalseActions.Add(spec.OnFalseAction);
+            if (spec.OnFalseAction != null)
+                _onFalseActions.Add(spec.OnFalseAction);
         }
 
         public bool IsSatisfiedBy(T candidate)
