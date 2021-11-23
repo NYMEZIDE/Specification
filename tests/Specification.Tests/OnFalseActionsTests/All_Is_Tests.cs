@@ -517,7 +517,7 @@ namespace Specification.Tests.OnFalseActionsTests
             var counter = 0;
             var spec = new Spec<Movie>(m => m.Rating % 2 == 0)
             {
-                OnFalseAction = (spec, candidate) => counter++
+                OnFalseAction = (s, c) => counter++
             };
 
             movies.AllIs(spec);
