@@ -17,10 +17,10 @@ jobs:
     strategy:
       matrix:
         dotnet: [
-          { framework: netstandard2.0, version: 2.1.x },
-          { framework: netstandard2.1, version: 3.1.x },
-          { framework: net5.0, version: 5.0.x },
-          { framework: net6.0, version: 6.0.x }
+          { framework: netstandard2.0, netframework: netcoreapp2.1, version: 2.1.x },
+          { framework: netstandard2.1, netframework: netcoreapp3.1, version: 3.1.x },
+          { framework: netstandard2.1, netframework: net5.0, version: 5.0.x },
+          { framework: netstandard2.1, netframework: net6.0, version: 6.0.x }
         ]
 
     name: ${{ matrix.dotnet.framework }} – run tests
@@ -35,5 +35,5 @@ jobs:
 
       - name: Run tests
         run: |
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.framework }}
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.netframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.netframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
