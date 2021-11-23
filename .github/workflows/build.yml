@@ -7,9 +7,9 @@ on:
       - '*'
 
 jobs:
-  build:
+  build-tests:
     runs-on: ubuntu-latest
-    name: Dotnet Build
+    name: Dotnet Build and Tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
@@ -34,35 +34,25 @@ jobs:
           dotnet build -f netstandard2.0 --configuration Release
           dotnet build -f netstandard2.1 --configuration Release
           dotnet build -f net5.0 --configuration Release
-          dotnet build -f net6.0 --configuration Release    
-          
-  tests:
-    needs: build
-    name: Dotnet Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x'
+          dotnet build -f net6.0 --configuration Release
       - run: |
-          dotnet test ./tests/Specification.Tests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
           dotnet test ./tests/Specification.IntegrationTests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test ./tests/Specification.Tests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
       
   coveralls-finished:
-    needs: tests
+    needs: build-tests
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls
