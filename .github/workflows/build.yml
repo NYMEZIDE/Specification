@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Dotnet Build and Tests
+    name: Dotnet Build
     steps:
       - uses: actions/checkout@v2
       - name: Setup dotnet
@@ -34,17 +34,32 @@ jobs:
           dotnet build -f netstandard2.0 --configuration Release
           dotnet build -f netstandard2.1 --configuration Release
           dotnet build -f net5.0 --configuration Release
-          dotnet build -f net6.0 --configuration Release
-      - run: |
-          dotnet test ./tests/Specification.IntegrationTests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
-          dotnet test ./tests/Specification.Tests /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
-      - name: Publish coverage report to coveralls.io   
-        uses: coverallsapp/github-action@master   
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
-          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
-      - name: Publish coverage report to coveralls.io   
-        uses: coverallsapp/github-action@master   
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} 
-          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
+          dotnet build -f net6.0 --configuration Release    
+          
+  tests:
+    name: Dotnet Tests
+    strategy:
+      matrix:
+        service:
+        - Specification.IntegrationTests
+        - Specification.Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test
+    - run: |
+        dotnet test ./tests/${{ matrix.service }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+    - name: Publish coverage report to coveralls.io   
+      uses: coverallsapp/github-action@master   
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }} 
+        parallel: true
+        path-to-lcov: ./tests/${{ matrix.service }}/TestResults/coverage.info
+      
+  coveralls-finished:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
