@@ -21,7 +21,22 @@ namespace Specification.Tests
             Assert.True(movie.Is(boring));
             Assert.True(boring.IsSatisfiedBy(movie));
         }
-        
+
+        [Fact]
+        public void When_Spec_is_class_as_default()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(3),
+                Rating = 3
+            };
+
+            AbstractSpec<Movie> boring = new BoringMovieSpec();
+
+            Assert.True(movie.Is(boring));
+            Assert.True(boring.IsSatisfiedBy(movie));
+        }
+
         [Fact]
         public void When_TwoSpec_is_class_and_isTrue()
         {
@@ -54,6 +69,24 @@ namespace Specification.Tests
 
             AbstractSpec<Movie> compositeSpecs = longest.And(ratingLess);
             
+            Assert.False(movie.Is(compositeSpecs));
+            Assert.False(compositeSpecs.IsSatisfiedBy(movie));
+        }
+
+        [Fact]
+        public void When_TwoSpec_is_class_and_isFalse_as_Default()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(3),
+                Rating = 5
+            };
+
+            AbstractSpec<Movie> longest = new LongestMovieSpec();
+            AbstractSpec<Movie> ratingLess = new RatingLessMovieSpec();
+
+            AbstractSpec<Movie> compositeSpecs = longest.And(ratingLess);
+
             Assert.False(movie.Is(compositeSpecs));
             Assert.False(compositeSpecs.IsSatisfiedBy(movie));
         }
