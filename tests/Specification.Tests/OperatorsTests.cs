@@ -49,7 +49,20 @@ namespace Specification.Tests
             
             Assert.True(movie.Is(longest == true));
         }
-        
+
+        [Fact]
+        public void Operator_LeftEqualityFalse_Test()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(3),
+            };
+
+            AbstractSpec<Movie> longest = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(3.5));
+
+            Assert.True(movie.Is(longest == false));
+        }
+
         [Fact]
         public void Operator_RightEquality_Test()
         {   
@@ -62,7 +75,20 @@ namespace Specification.Tests
             
             Assert.True(movie.Is(true == longest));
         }
-        
+
+        [Fact]
+        public void Operator_RightEqualityFalse_Test()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(3),
+            };
+
+            AbstractSpec<Movie> longest = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(3.5));
+
+            Assert.True(movie.Is(false == longest));
+        }
+
         [Fact]
         public void Operator_LeftInequality_Test()
         {   
@@ -75,7 +101,20 @@ namespace Specification.Tests
             
             Assert.True(movie.Is(longest != true));
         }
-        
+
+        [Fact]
+        public void Operator_LeftInequalityFalse_Test()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(2),
+            };
+
+            AbstractSpec<Movie> longest = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(1.5));
+
+            Assert.True(movie.Is(longest != false));
+        }
+
         [Fact]
         public void Operator_RightInequality_Test()
         {   
@@ -87,6 +126,19 @@ namespace Specification.Tests
             AbstractSpec<Movie> longest = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(2.5));
             
             Assert.True(movie.Is(true != longest));
+        }
+
+        [Fact]
+        public void Operator_RightInequalityFalse_Test()
+        {
+            Movie movie = new Movie()
+            {
+                Duration = TimeSpan.FromHours(2),
+            };
+
+            AbstractSpec<Movie> longest = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(1.5));
+
+            Assert.True(movie.Is(false != longest));
         }
 
         [Fact]
