@@ -35,5 +35,5 @@ jobs:
 
       - name: Run tests
         run: |
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.framework }}
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj --logger:trx
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj --logger:trx
