@@ -45,21 +45,24 @@ jobs:
         - Specification.Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Test
-    - run: |
-        dotnet test ./tests/${{ matrix.service }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
-    - name: Publish coverage report to coveralls.io   
-      uses: coverallsapp/github-action@master   
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }} 
-        parallel: true
-        path-to-lcov: ./tests/${{ matrix.service }}/TestResults/coverage.info
+      - name: Test
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      - run: |
+          dotnet test ./tests/${{ matrix.service }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          parallel: true
+          path-to-lcov: ./tests/${{ matrix.service }}/TestResults/coverage.info
       
   coveralls-finished:
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
