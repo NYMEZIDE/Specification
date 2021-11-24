@@ -1,0 +1,106 @@
+name: master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-tests:
+    runs-on: ubuntu-latest
+    name: Dotnet Build and Tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '2.1.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'    
+          
+      - name: Run build
+        run: |
+          cd ./src/Specification
+          dotnet build --configuration Release --framework netstandard2.0 /p:Framework=netcoreapp2.1
+          dotnet build --configuration Release --framework netstandard2.1 /p:Framework=netcoreapp3.1
+          dotnet build --configuration Release --framework net5.0 /p:Framework=net5.0
+          dotnet build --configuration Release --framework net6.0 /p:Framework=net6.0
+          
+      - name: Run tests
+        run: |    
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0 /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+      
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.Tests
+          parallel: true
+          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.IntegrationTests
+          parallel: true
+          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
+      
+  coveralls-finished:
+    needs: build-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
+          
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+
+    needs: coveralls-finished
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Extract version
+        id: extract-version
+        run: |
+          version=$(cat ./src/Specification/Specification.csproj | grep "<VersionPrefix>" | sed -e "s/ *<\/*VersionPrefix>//g")
+          echo "Package version: $version"
+          if [ -z "${version// }" ]; then exit 1; fi
+          echo "::set-output name=package_version::$version"
+      - name: Extract latest commit message
+        id: latest-commit
+        run: |
+          echo "${{ github.ref }}"
+          echo "::set-output name=message::$(git log --format=%B -n 1 ${{ github.event.after }})"
+      - uses: jwalton/gh-find-current-pr@v1
+        id: find-pr
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.extract-version.outputs.package_version }}
+          release_name: Release v${{ steps.extract-version.outputs.package_version }}
+          body: ${{ steps.find-pr.outputs.body || steps.latest-commit.outputs.message }}
+          draft: true
+          prerelease: false     
+          
