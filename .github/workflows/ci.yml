@@ -14,26 +14,43 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        dotnet: [
-          { framework: netcoreapp2.1, version: 2.1.x },
-          { framework: netcoreapp3.1, version: 3.1.x },
-          { framework: net5.0, version: 5.0.x },
-          { framework: net6.0, version: 6.0.x }
-        ]
-
-    name: ${{ matrix.dotnet.framework }} – run tests
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet.version }}
+          dotnet-version: 2.1.x
+          
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
 
-      - name: Run tests
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+          
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Run build
         run: |
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.framework }}
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          cd ./src/Specification
+          dotnet build --configuration Release --framework netstandard2.0 /p:Framework=netcoreapp2.1
+          dotnet build --configuration Release --framework netstandard2.1 /p:Framework=netcoreapp3.1
+          dotnet build --configuration Release --framework net5.0 /p:Framework=net5.0
+          dotnet build --configuration Release --framework net6.0 /p:Framework=net6.0
+          
+      - name: Run tests
+        run: |    
+          dotnet test --configuration Release --framework netcoreapp2.1 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=netcoreapp2.1
+          dotnet test --configuration Release --framework netcoreapp3.1 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=netcoreapp3.1
+          dotnet test --configuration Release --framework net5.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net5.0
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0
+          dotnet test --configuration Release --framework netcoreapp3.1 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=netcoreapp3.1
+          dotnet test --configuration Release --framework net5.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net5.0
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0
