@@ -21,6 +21,14 @@ namespace Specification.Tests
             Assert.True(movie.Is(boring));
             Assert.True(boring.IsSatisfiedBy(movie));
         }
+        
+        [Fact]
+        public void When_Candidate_isNULL_Then_False()
+        {
+            AbstractSpec<Movie> boring = new BoringMovieSpec(TimeSpan.FromHours(2.5), 3);
+
+            Assert.False(boring.IsSatisfiedBy(null));
+        }
 
         [Fact]
         public void When_Spec_is_class_as_default()

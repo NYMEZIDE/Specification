@@ -6,9 +6,9 @@ namespace Specification.Internal
 {
     internal sealed class AndSpecification<T> : AbstractSpec<T>
     {
-        public AbstractSpec<T> Left { get; private set; }
+        private AbstractSpec<T> Left { get; }
 
-        public AbstractSpec<T> Right { get; private set; }
+        private AbstractSpec<T> Right { get; }
 
         internal AndSpecification(AbstractSpec<T> left, AbstractSpec<T> right)
         {
@@ -22,14 +22,12 @@ namespace Specification.Internal
         {
             var leftResult = Left.InternalIsSatisfiedBy(candidate);
 
-            if (leftResult == false)
-            //if (leftResult == false && Left.OnFalseAction != null)
+            if (leftResult is false)
                 base.UpActions(Left);
 
             var rightResult = Right.InternalIsSatisfiedBy(candidate);
 
-            if (rightResult == false)
-            //if (rightResult == false && Right.OnFalseAction != null)
+            if (rightResult is false)
                 base.UpActions(Right);
 
             return leftResult && rightResult;

@@ -6,9 +6,9 @@ namespace Specification.Internal
 {
     internal sealed class OrSpecification<T> : AbstractSpec<T>
     {
-        public AbstractSpec<T> Left { get; private set; }
+        private AbstractSpec<T> Left { get; }
 
-        public AbstractSpec<T> Right { get; private set; }
+        private AbstractSpec<T> Right { get; }
 
         internal OrSpecification(AbstractSpec<T> left, AbstractSpec<T> right)
         {
@@ -23,11 +23,9 @@ namespace Specification.Internal
             if (Left.InternalIsSatisfiedBy(candidate) || Right.InternalIsSatisfiedBy(candidate))
                 return true;
 
-            //if (Left.OnFalseAction != null)
-                base.UpActions(Left);
+            base.UpActions(Left);
 
-            //if (Right.OnFalseAction != null)
-                base.UpActions(Right);
+            base.UpActions(Right);
 
             return false;
         }

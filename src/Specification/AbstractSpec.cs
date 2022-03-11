@@ -31,9 +31,9 @@ namespace Specification
 
         public bool IsSatisfiedBy(T candidate)
         {
-            var result = InternalIsSatisfiedBy(candidate);
+            var result = candidate != null && InternalIsSatisfiedBy(candidate);
         
-            if (result == false)
+            if (result is false)
             {
                 if (_onFalseActions != null)
                 {
@@ -41,10 +41,7 @@ namespace Specification
                         action(this, candidate);
                 }
 
-                if (OnFalseAction != null)
-                {
-                    OnFalseAction(this, candidate);
-                }
+                OnFalseAction?.Invoke(this, candidate);
             }
 
             return result;

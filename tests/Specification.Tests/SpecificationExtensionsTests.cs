@@ -64,6 +64,30 @@ namespace Specification.Tests
 
             Assert.False(movie.IsAny(spec1, spec2, spec3));
         }
+        
+        [Fact]
+        public void When_IsAny_ArraySpecs_isEmpty_Then_False()
+        {
+            Movie movie = new Movie()
+            {
+                Rating = 5
+            };
+
+            AbstractSpec<Movie>[] specs = new List<AbstractSpec<Movie>>().ToArray();
+
+            Assert.False(movie.IsAny(specs));
+        }
+        
+        [Fact]
+        public void When_IsAny_ArraySpecs_isNULL_Then_False()
+        {
+            Movie movie = new Movie()
+            {
+                Rating = 5
+            };
+
+            Assert.False(movie.IsAny(null));
+        }
 
         [Fact]
         public void When_IsAll_True()
@@ -80,6 +104,34 @@ namespace Specification.Tests
             var spec3 = new Spec<Movie>(m => m.Duration > TimeSpan.FromHours(2));
 
             Assert.True(movie.IsAll(spec1, spec2, spec3));
+        }
+        
+        [Fact]
+        public void When_IsAll_ArraySpecs_isEmpty_Then_False()
+        {
+            Movie movie = new Movie()
+            {
+                Rating = 3,
+                MpaaRating = MpaaRating.R,
+                Duration = TimeSpan.FromHours(2.5)
+            };
+            
+            AbstractSpec<Movie>[] specs = new List<AbstractSpec<Movie>>().ToArray();
+
+            Assert.False(movie.IsAll(specs));
+        }
+        
+        [Fact]
+        public void When_IsAll_ArraySpecs_isNULL_Then_False()
+        {
+            Movie movie = new Movie()
+            {
+                Rating = 3,
+                MpaaRating = MpaaRating.R,
+                Duration = TimeSpan.FromHours(2.5)
+            };
+            
+            Assert.False(movie.IsAll(null));
         }
 
         [Fact]

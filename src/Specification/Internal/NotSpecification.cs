@@ -6,7 +6,7 @@ namespace Specification.Internal
 {
     internal sealed class NotSpecification<T> : AbstractSpec<T>
     {
-        public AbstractSpec<T> Inner { get; private set; }
+        private AbstractSpec<T> Inner { get; }
 
         internal NotSpecification(AbstractSpec<T> inner)
         {
@@ -19,8 +19,7 @@ namespace Specification.Internal
         {
             var innerResult = !Inner.InternalIsSatisfiedBy(candidate);
 
-            if (innerResult == false)
-            //if (innerResult == false && Inner.OnFalseAction != null)
+            if (innerResult is false)
                 base.UpActions(Inner);
 
             return innerResult;

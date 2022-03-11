@@ -17,17 +17,13 @@ namespace Specification
         /// <returns></returns>
         public static bool IsAny<T>(this T candidate, params AbstractSpec<T>[] specs)
         {
-            AbstractSpec<T> combineSpec = null;
+            if (specs == null || !specs.Any())
+                return false;
+            
+            AbstractSpec<T> combineSpec = specs.Aggregate<AbstractSpec<T>, AbstractSpec<T>>(null, (current, spec) 
+                => current == null ? spec : current.Or(spec));
 
-            foreach(var spec in specs)
-            {
-                if (combineSpec == null)
-                    combineSpec = spec;
-                else
-                    combineSpec = combineSpec.Or(spec); 
-            }
-
-            return combineSpec.IsSatisfiedBy(candidate);
+            return combineSpec!.IsSatisfiedBy(candidate);
         }
 
         /// <summary>
@@ -39,15 +35,11 @@ namespace Specification
         /// <returns></returns>
         public static bool IsAll<T>(this T candidate, params AbstractSpec<T>[] specs)
         {
-            AbstractSpec<T> combineSpec = null;
-
-            foreach (var spec in specs)
-            {
-                if (combineSpec == null)
-                    combineSpec = spec;
-                else
-                    combineSpec = combineSpec.And(spec);
-            }
+            if (specs == null || !specs.Any())
+                return false;
+            
+            AbstractSpec<T> combineSpec = specs.Aggregate<AbstractSpec<T>, AbstractSpec<T>>(null, (current, spec) 
+                => current == null ? spec : current.And(spec));
 
             return combineSpec.IsSatisfiedBy(candidate);
         }
