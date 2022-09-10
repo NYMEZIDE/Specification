@@ -38,8 +38,8 @@ jobs:
 
       - name: Run UnitTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
 
       - name: Run IntegrationTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
