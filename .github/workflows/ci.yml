@@ -32,6 +32,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet.version }}
 
+      - name: Run build
+        run: |
+          dotnet build --configuration Release --framework ${{ matrix.dotnet.framework }} ./src/Specification/Specification.csproj /p:Framework=${{ matrix.dotnet.framework }}
+
       - name: Run UnitTests
         run: |    
           dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
