@@ -6,7 +6,7 @@
 	<!-- These entries are needed for unit tests for older platform versions. -->
 	<TargetFramework Condition="'$(Framework)' == 'net5.0'">net5.0</TargetFramework>
 	<TargetFramework Condition="'$(Framework)' == 'netcoreapp3.1'">netstandard2.1</TargetFramework>
-    <LangVersion>10</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <VersionPrefix>1.0.3</VersionPrefix>
     <Title>Nymezide.Specification</Title>
   </PropertyGroup>
