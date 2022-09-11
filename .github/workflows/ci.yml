@@ -17,9 +17,9 @@ jobs:
     strategy:
       matrix:
         dotnet: [
-          { framework: netcoreapp3.1, version: 3.1.x },
-          { framework: net5.0, version: 5.0.x },
-          { framework: net6.0, version: 6.0.x },
+          { framework: netstandard2.1, conditionframework: netcoreapp3.1, version: 3.1.x },
+          { framework: net5.0, conditionframework: net5.0, version: 5.0.x },
+          { framework: net6.0, conditionframework: net6.0, version: 6.0.x },
         ]
 
     name: ${{ matrix.dotnet.framework }} – run tests
@@ -32,10 +32,14 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet.version }}
 
+      - name: Run build
+        run: |
+          dotnet build --configuration Release --framework ${{ matrix.dotnet.framework }} ./src/Specification/Specification.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+
       - name: Run UnitTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
 
       - name: Run IntegrationTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.framework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.framework }}
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}

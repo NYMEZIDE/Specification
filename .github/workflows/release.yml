@@ -8,49 +8,43 @@ on:
 jobs:
   build-tests:
     runs-on: ubuntu-latest
-    name: Dotnet Build and Tests
+
+    strategy:
+      matrix:
+        dotnet: [
+          { framework: netstandard2.1, conditionframework: netcoreapp3.1, version: 3.1.x },
+          { framework: net5.0, conditionframework: net5.0, version: 5.0.x },
+          { framework: net6.0, conditionframework: net6.0, version: 6.0.x },
+        ]
+
+    name: ${{ matrix.dotnet.framework }} – run tests
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.x'
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x'
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'    
-          
+          dotnet-version: ${{ matrix.dotnet.version }}
+
       - name: Run build
         run: |
-          cd ./src/Specification
-          dotnet build --configuration Release --framework netstandard2.0 /p:Framework=netcoreapp2.1
-          dotnet build --configuration Release --framework netstandard2.1 /p:Framework=netcoreapp3.1
-          dotnet build --configuration Release --framework net5.0 /p:Framework=net5.0
-          dotnet build --configuration Release --framework net6.0 /p:Framework=net6.0
-          
-      - name: Run tests
+          dotnet build --configuration Release --framework ${{ matrix.dotnet.framework }} ./src/Specification/Specification.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+
+      - name: Run UnitTests
         run: |    
-          dotnet test --configuration Release --framework netcoreapp2.1 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=netcoreapp2.1
-          dotnet test --configuration Release --framework netcoreapp3.1 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=netcoreapp3.1
-          dotnet test --configuration Release --framework net5.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net5.0
-          dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0
-          dotnet test --configuration Release --framework netcoreapp3.1 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=netcoreapp3.1
-          dotnet test --configuration Release --framework net5.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net5.0
-          dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0
-          
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+
+      - name: Run IntegrationTests
+        run: |    
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
+  
   build-and-publish:
-    name: Build and publish library to NuGet
+    needs: build-tests
+
     runs-on: ubuntu-latest
 
-    needs: build-tests
+    name: Build and publish library to NuGet
       
     steps:
       - uses: actions/checkout@v2
@@ -92,10 +86,11 @@ jobs:
 
 
   upload-release-assets:
-    name: Upload release assets
+    needs: build-and-publish
+
     runs-on: ubuntu-latest
 
-    needs: build-and-publish
+    name: Upload release assets
 
     steps:
       - uses: actions/download-artifact@v2
