@@ -45,14 +45,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: run-Specification.Tests
           parallel: true
-          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.net6.0.info
+          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
       - name: Publish coverage report to coveralls.io   
         uses: coverallsapp/github-action@master   
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: run-Specification.IntegrationTests
           parallel: true
-          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.net6.0.info
+          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
       
   coveralls-finished:
     needs: build-tests
