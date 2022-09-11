@@ -33,29 +33,48 @@ jobs:
 
       - name: Run UnitTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
 
       - name: Run IntegrationTests
         run: |    
-          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }} /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+          dotnet test --configuration Release --framework ${{ matrix.dotnet.conditionframework }} ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=${{ matrix.dotnet.conditionframework }}
 
-      - name: Publish coverage report to coveralls.io   
-        uses: coverallsapp/github-action@master   
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: run-Specification.Tests
-          parallel: true
-          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.info
-      - name: Publish coverage report to coveralls.io   
-        uses: coverallsapp/github-action@master   
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: run-Specification.IntegrationTests
-          parallel: true
-          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.info
-      
-  coveralls-finished:
+
+  coveralls-started:
     needs: build-tests
+
+    name: Test only .NET 6 and calculate Coverage summary
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Run UnitTests
+      run:     
+        dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+
+    - name: Run IntegrationTests
+      run:    
+        dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+
+    - name: Publish coverage report to coveralls.io   
+      uses: coverallsapp/github-action@master   
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        flag-name: run-Specification.Tests
+        parallel: true
+        path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.net6.0.info
+    - name: Publish coverage report to coveralls.io   
+      uses: coverallsapp/github-action@master   
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        flag-name: run-Specification.IntegrationTests
+        parallel: true
+        path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.net6.0.info
+      
+
+  coveralls-finished:
+    needs: coveralls-started
 
     name: Coveralls Publish
 
@@ -68,6 +87,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
           
+
   release:
     needs: coveralls-finished
 
