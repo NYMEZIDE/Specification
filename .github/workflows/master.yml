@@ -43,34 +43,36 @@ jobs:
   coveralls-started:
     needs: build-tests
 
-    name: Test only .NET 6 and calculate Coverage summary
+    name: Calculate Coverage 
 
     runs-on: ubuntu-latest
     
     steps:
+      - uses: actions/checkout@v2
 
-    - name: Run UnitTests
-      run:     
-        dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+      - name: Run UnitTests
+        run:     
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.Tests/Specification.Tests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+      
+      - name: Run IntegrationTests
+        run:    
+          dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
+      
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.Tests
+          parallel: true
+          path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.net6.0.info
 
-    - name: Run IntegrationTests
-      run:    
-        dotnet test --configuration Release --framework net6.0 ./tests/Specification.IntegrationTests/Specification.IntegrationTests.csproj /p:Framework=net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov --logger:trx -r TestResults
-
-    - name: Publish coverage report to coveralls.io   
-      uses: coverallsapp/github-action@master   
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        flag-name: run-Specification.Tests
-        parallel: true
-        path-to-lcov: ./tests/Specification.Tests/TestResults/coverage.net6.0.info
-    - name: Publish coverage report to coveralls.io   
-      uses: coverallsapp/github-action@master   
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        flag-name: run-Specification.IntegrationTests
-        parallel: true
-        path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.net6.0.info
+      - name: Publish coverage report to coveralls.io   
+        uses: coverallsapp/github-action@master   
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-Specification.IntegrationTests
+          parallel: true
+          path-to-lcov: ./tests/Specification.IntegrationTests/TestResults/coverage.net6.0.info
       
 
   coveralls-finished:
